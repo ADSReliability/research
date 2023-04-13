@@ -30,7 +30,6 @@ parser.add_argument('--trainer', type=str, default='MUNIT', help="MUNIT|UNIT")
 opts = parser.parse_args()
 
 
-
 torch.manual_seed(opts.seed)
 torch.cuda.manual_seed(opts.seed)
 if not os.path.exists(opts.output_folder):
@@ -89,12 +88,23 @@ with torch.no_grad():
             _, style = style_encode(style_image)
         else:
             style = style_rand
-        for j in range(opts.num_style):
-            s = style[j].unsqueeze(0)
-            outputs = decode(content, s)
-            outputs = (outputs + 1) / 2.
-            path = os.path.join(opts.output_folder, 'output{:03d}.jpg'.format(j))
-            vutils.save_image(outputs.data, path, padding=0, normalize=True)
+        # 命名修改这部分
+        # for j in range(opts.num_style):
+        #     s = style[j].unsqueeze(0)
+        #     outputs = decode(content, s)
+        #     outputs = (outputs + 1) / 2.
+        #     path = os.path.join(opts.output_folder, 'output{:03d}.jpg'.format(j))
+        #     vutils.save_image(outputs.data, path, padding=0, normalize=True)
+
+        weather = str(opts.config).split('/')[-1].split('.')[0]
+        weather += "_"
+        name = str(opts.input).split('\\')[-1].split('.')[0]
+        name = name[name.find('_') + 1:]
+        s = style[0].unsqueeze(0)
+        outputs = decode(content, s)
+        outputs = (outputs + 1) / 2.
+        path = os.path.join(opts.output_folder, weather + name + ".jpg")
+        vutils.save_image(outputs.data, path, padding=0, normalize=True)
     elif opts.trainer == 'UNIT':
         outputs = decode(content)
         outputs = (outputs + 1) / 2.
